@@ -1,0 +1,22 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Root folder
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Trailing whitespace has a desired effect for newlines in Markdown documents. It should be assumed that whitespace left in the file is deliberate.
+trim_trailing_whitespace = false
+
+# The indent size for npm json files cannot be changed: https://github.com/npm/npm/pull/3180#issuecomment-16336516
+# See npm creator Isaac Schlueter's comment: "Indenting with 2 spaces is how npm writes human-readable json"
+[{package.json}]
+indent_style = space
+indent_size = 2
