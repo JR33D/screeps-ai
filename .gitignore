@@ -1,5 +1,0 @@
-node_modules/**
-typings/**
-secrets.js
-dist/**
-src/config.ts
