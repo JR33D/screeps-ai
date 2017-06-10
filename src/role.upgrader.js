@@ -3,13 +3,18 @@ var roleUpgrader = {
         basic: [WORK, CARRY, MOVE], // 200
         interm: [WORK, WORK, CARRY, CARRY, MOVE, MOVE] // 400
     },
-    build: function (spawn) {
-        var bodyParts = this.parts['interm'];
-        if (spawn.canCreateCreep(bodyParts) == ERR_NOT_ENOUGH_ENERGY) {
+    build: function (spawn, availableEnergy) {
+        var bodyParts;
+        if (availableEnergy >= 400) {
+            bodyParts = this.parts['interm'];
+        } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
         }
-        var newName = spawn.createCreep(bodyParts, undefined, { role: 'upgrader', upgrading: false });
-        console.log('Spawning new upgrading: ' + newName);
+
+        if (bodyParts) {
+            var newName = spawn.createCreep(bodyParts, undefined, { role: 'upgrader', upgrading: false });
+            console.log('Spawning new creep: ' + newName + ' ('+Game.creeps[newName].memory.role +')');
+        }
     },
     run: function (creep) {
         if (creep.memory.upgrading && (creep.carry.energy == 0 || creep.carry.energy < creep.carry.carryCapacity)) {

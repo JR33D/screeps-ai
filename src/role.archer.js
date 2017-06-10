@@ -3,13 +3,18 @@ var roleArcher = {
         basic: [Game.RANGED_ATTACK, Game.MOVE], // 200
         interm: [Game.RANGED_ATTACK, Game.RANGED_ATTACK, Game.MOVE, Game.MOVE] // 400
     },
-    build: function (spawn) {
-        var bodyParts = this.parts['interm'];
-        if (spawn.canCreateCreep(bodyParts) == ERR_NOT_ENOUGH_ENERGY) {
+    build: function (spawn, availableEnergy) {
+        var bodyParts;
+        if(availableEnergy >= 400) {
+            bodyParts = this.parts['interm'];
+        } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
         }
-        var newName = spawn.createCreep(bodyParts, undefined, { role: 'archer' });
-        console.log('Spawning new archer: ' + newName);
+
+        if (bodyParts) {
+            var newName = spawn.createCreep(bodyParts, undefined, { role: 'archer' });
+            console.log('Spawning new creep: ' + newName + ' ('+Game.creeps[newName].memory.role +')');
+        }
     },
     run: function (creep) {
         var targets = creep.room.find(FIND_HOSTILE_CREEPS);

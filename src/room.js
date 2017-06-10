@@ -1,10 +1,25 @@
-var config = require('config')
+var config = require('config');
+var roleHarvester = require('role.harvester');
+var roleMiner = require('role.miner');
+var roleUpgrader = require('role.upgrader');
+var roleBuilder = require('role.builder');
+var roleWarrior = require('role.warrior');
 
 var roomManager = {
     buildAllRoads: function (spawn) {
-        var targets = spawn.room.find(FIND_SOURCES_ACTIVE);
+        var sourceTargets = spawn.room.find(FIND_SOURCES);
+        var structureTargets = spawn.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_EXTENSION ||
+                    structure.structureType == STRUCTURE_CONTAINER ||
+                    structure.structureType == STRUCTURE_CONTROLLER ||
+                    structure.structureType == STRUCTURE_TOWER);
+                }
+        });
+        var targets = _.union(sourceTargets, structureTargets)
+        console.log('RT: ' + targets)
         for (var i = 0; i < targets.length; i++) {
-            var path = spawn.room.findPath(spawn.pos, targets[i].pos, { maxOps: 1000, ignoreDestructibleStructures: true, ignoreCreeps: true });
+            var path = spawn.room.findPath(spawn.pos, targets[i].pos, { ignoreCreeps: true });
             for (var j = 0; j < path.length - 1; j++) {
                 var tiles = spawn.room.lookAt(path[j].x, path[j].y);
                 var valid = true;
@@ -14,33 +29,41 @@ var roomManager = {
                         k = tiles.length + 1;
                     }
                 }
-            }
-            if (valid) {
-                spawn.room.createConstructionSite(path[j].x, path[j].y, STRUCTURE_ROAD);
+                if (valid) {
+                    spawn.room.createConstructionSite(path[j].x, path[j].y, STRUCTURE_ROAD);
+                }
             }
         }
     },
     checkPopulation: function (spawn, availableEnergy) {
         var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+        var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
         var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         var warriors = _.filter(Game.creeps, (creep) => creep.memory.role == 'warrior');
-        console.log('Harvesters: ' + harvesters.length + '\nBuilders: ' + builders.length + '\nUpgraders: ' + upgraders.length + '\nWarriors: ' + warriors.length);
+        var archers = _.filter(Game.creeps, (creep) => creep.memory.role == 'archer');
+        console.log('Harvesters: ' + harvesters.length + '\nMiners: ' + miners.length
+                + '\nBuilders: ' + builders.length + '\nUpgraders: ' + upgraders.length
+                + '\nWarriors: ' + warriors.length + '\nArchers: ' + archers.length);
 
         if (!spawn.spawning && harvesters.length < config.MAX_HARVESTERS) {
-
+            roleHarvester.build(spawn, availableEnergy);
         }
 
-        if (!spawn.spawning && (builders.length < config.MAX_BUILDERS && harvesters.length == config.MAX_HARVESTERS)) {
+        // if(!spawn.spawning && miners.length > config.MAX_MINERS) {
+        //     roleMiner.build(spawn, availableEnergy);
+        // }
 
+        if (!spawn.spawning && (builders.length < config.MAX_BUILDERS && harvesters.length == config.MAX_HARVESTERS)) {
+            roleBuilder.build(spawn, availableEnergy);
         }
 
         if (!spawn.spawning && (upgraders.length < config.MAX_UPGRADERS && builders.length == config.MAX_BUILDERS && harvesters.length == config.MAX_HARVESTERS)) {
-
+            roleUpgrader.build(spawn, availableEnergy);
         }
 
         if (!spawn.spawning && warriors.length < config.MAX_WARRIORS) {
-
+            roleWarrior.build(spawn, availableEnergy);
         }
 
         if (spawn.spawning) {
