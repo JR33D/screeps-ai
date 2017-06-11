@@ -5,7 +5,7 @@ var roleArcher = {
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        if(availableEnergy >= 400) {
+        if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
@@ -13,7 +13,7 @@ var roleArcher = {
 
         if (bodyParts) {
             var newName = spawn.createCreep(bodyParts, undefined, { role: 'archer' });
-            console.log('Spawning new creep: ' + newName + ' ('+Game.creeps[newName].memory.role +')');
+            console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');
         }
     },
     run: function (creep) {

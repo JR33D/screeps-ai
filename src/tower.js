@@ -7,6 +7,11 @@ var tower = function (tower) {
             tower.repair(closestDamagedStructure);
         }
 
+        var closestFriendly = tower.pos.findClosestByRange(FIND_MY_CREEPS);
+        if (closestFriendly) {
+            tower.heal(closestFriendly);
+        }
+
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (closestHostile) {
             tower.attack(closestHostile);

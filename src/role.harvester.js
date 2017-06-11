@@ -11,13 +11,13 @@ var roleHarvester = {
             bodyParts = this.parts['basic'];
         }
 
-        if(bodyParts) {
+        if (bodyParts) {
             var newName = spawn.createCreep(bodyParts, undefined, { role: 'harvester', harvesting: false });
-            console.log('Spawning new creep: ' + newName + ' ('+Game.creeps[newName].memory.role +')');
+            console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');
         }
     },
     run: function (creep) {
-        if (!creep.memory.harvesting && (creep.carry.energy == 0 || creep.carry.energy < creep.carry.carryCapacity)) {
+        if (!creep.memory.harvesting && creep.carry.energy == 0) {
             creep.memory.harvesting = true;
             creep.say('🎁');
         }
@@ -28,11 +28,11 @@ var roleHarvester = {
         }
 
         if (creep.memory.harvesting) {
-            var droppedSources = creep.room.find(FIND_DROPPED_RESOURCES);
+            var droppedSources = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
             var sources = creep.room.find(FIND_SOURCES);
-            if (creep.harvest(droppedSources[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(droppedSources[0]);
-            } else if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+            if (droppedSources && creep.pickup(droppedSources) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(droppedSources);
+            } else if (sources.length > 0 && creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[0]);
             }
         } else {
@@ -40,7 +40,6 @@ var roleHarvester = {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_EXTENSION ||
                         structure.structureType == STRUCTURE_SPAWN ||
-                        structure.structureType == STRUCTURE_CONTAINER ||
                         structure.structureType == STRUCTURE_TOWER) &&
                         structure.energy < structure.energyCapacity;
                 }
@@ -52,7 +51,7 @@ var roleHarvester = {
             } else {
                 creep.say('🔨');
                 if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller, { reusePath: 50 });
+                    creep.moveTo(creep.room.controller );
                 }
             }
         }

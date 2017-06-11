@@ -12,55 +12,32 @@ var roleMiner = {
         }
 
         if (bodyParts) {
-            var newName = spawn.createCreep(bodyParts, undefined, { role: 'miner' });
-            console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');
+            var mineFlags = _.filter(Game.flags, (flag) => flag.name.startsWith('Mine'));
+            _.forEach(mineFlags, (flag) => {
+                var source = flag.pos.findClosestByRange(FIND_SOURCES);
+                var lookCreep = flag.room.lookForAt(LOOK_CREEPS, flag);
+                var lookContainer = flag.room.lookForAt(LOOK_STRUCTURES, flag);
+                var lookConstruction = flag.room.lookForAt(LOOK_CONSTRUCTION_SITES, flag)
+                if (lookContainer.length == 0 && lookConstruction.length != 0) {
+                    flag.room.createConstructionSite(flag.pos.x, flag.pos.y, STRUCTURE_CONTAINER);
+                }
+
+                if (source && lookCreep.length == 0 && (lookContainer.length > 0 && lookContainer[0].structureType == STRUCTURE_CONTAINER)) {
+                    var newName = spawn.createCreep(bodyParts, undefined, { role: 'miner', source: source.id, container: lookContainerMineOne[0].id });
+                    console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');
+                }
+            });
         }
     },
     run: function (creep) {
-        ;
-        var source = Game.getObjectById(creep.memory.harvestTarget);
-
-        if (source == null) {
-            var source = this.openMineSpace(creep);
-
-            if (!source)
-                return;
-
-            this.setSourceToMine(source);
-        }
-
-        if (creep.pos.inRangeTo(source, 5))
-            creep.memory.isNearSource = true;
-        else
-            creep.memory.isNearSource = false;
-
-
-        Memory.sources[source.id].miner = creep.id;
-
-        creep.moveTo(source);
-        creep.harvest(source);
-    },
-    openMineSpace: function (creep) {
-        let room = creep.room;
-        let mineableSources = [];
-        for (let source of room.find(FIND_SOURCES)) {
-
-            if (Memory.sources[source.id] == undefined) {
-                Memory.sources[source.id] = { id: source.id };
+        var source = Game.getObjectById(creep.memory.source);
+        var container = Game.getObjectById(creep.memory.container);
+        if (container.store[RESOURCE_ENERGY] < container.storeCapacity) {
+            if (creep.pos.x != container.pos.x && creep.pos.y != container.pos.y) {
+                creep.moveTo(container.pos.x, container.pos.y);
+            } else {
+                creep.harvest(source)
             }
-
-            let creepCount = 0;
-            for (let creep of room.find(FIND_MY_CREEPS)) {
-                if (creep.memory.harvestTarget === source.id) {
-                    creepCount++;
-                }
-            }
-            if (creepCount < 2) {
-                mineableSources.push(source);
-            }
-        }
-        if (mineableSources.length > 0) {
-            creep.memory.harvestTarget = creep.pos.findClosestByPath(mineableSources).id;
         }
     }
 };
