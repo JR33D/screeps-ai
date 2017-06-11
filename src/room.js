@@ -55,7 +55,7 @@ var roomManager = {
         if (!spawn.spawning && miners.length < config.MAX_MINERS) {
             roleMiner.build(spawn, availableEnergy);
         }
-        if (!spawn.spawning && carriers.length < config.MAX_CARRIERS && miners.length >= 1) {
+        if (!spawn.spawning && carriers.length < config.MAX_CARRIERS) {
             roleCarrier.build(spawn, availableEnergy);
         }
         if (!spawn.spawning && (builders.length < config.MAX_BUILDERS && harvesters.length >= config.MAX_HARVESTERS)) {

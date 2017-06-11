@@ -1,21 +1,52 @@
-var tower = function (tower) {
-    if (tower) {
+var config = require('config');
+
+var roleTower = {
+    run: function (tower) {
+        // Task priority for towers: attack, then heal, then repair
+        var taskPriority = [
+            (tower) => this.attackNearestEnemy(tower),
+            (tower) => this.healNearestAlly(tower),
+            (tower) => this.preventRampartDecay(tower),
+            (tower) => this.repairNearestStructure(tower),
+        ];
+        for (let task of taskPriority) {
+            if (task(tower) == OK) {
+                break;
+            }
+        }
+    },
+    attackNearestEnemy: function (tower) {
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (closestHostile != undefined) {
+            return tower.attack(closestHostile);
+        }
+    },
+    healNearestAlly: function (tower) {
+        var closestDamagedAlly = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
+            filter: (c) => c.hits < c.hitsMax,
+        });
+        if (closestDamagedAlly) {
+            return tower.heal(closestDamagedAlly);
+        }
+    },
+    repairNearestStructure: function (tower) {
         var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
+            filter: (s) => s.hits < s.hitsMax &&
+                s.structureType != STRUCTURE_WALL &&
+                s.structureType != STRUCTURE_RAMPART,
         });
         if (closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
+            return tower.repair(closestDamagedStructure);
         }
-
-        var closestFriendly = tower.pos.findClosestByRange(FIND_MY_CREEPS);
-        if (closestFriendly) {
-            tower.heal(closestFriendly);
-        }
-
-        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
-            tower.attack(closestHostile);
+    },
+    preventRampartDecay: function (tower) {
+        let hp = 500; // TODO: hardwired
+        var closestDyingRampart = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < hp && s.structureType == STRUCTURE_RAMPART,
+        });
+        if (closestDyingRampart) {
+            return tower.repair(closestDyingRampart);
         }
     }
 };
-module.exports = tower;
+module.exports = roleTower;

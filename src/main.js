@@ -5,7 +5,7 @@ var roleBuilder = require('role.builder');
 var roleWarrior = require('role.warrior');
 var roleCarrier = require('role.carrier');
 var roomManager = require('room');
-var tower = require('tower');
+var roleTower = require('tower');
 var utilities = require('utilities');
 var config = require('config');
 
@@ -17,19 +17,20 @@ module.exports.loop = function () {
         availableEnergy = + Game.rooms[name].energyAvailable;
         console.log('Room "' + name + '" has ' + Game.rooms[name].energyAvailable + '/' + Game.rooms[name].energyCapacityAvailable + ' energy');
 
-        var towers = Game.rooms[name].find(FIND_STRUCTURES, {
+        var towers = Game.rooms[name].find(FIND_MY_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_TOWER
             }
         });
-        for (var tower in towers) {
-            tower(tower);
-        }
+
+        var towers = Game.rooms[name].find(
+            FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+        towers.forEach(tower => roleTower.run(tower));
     }
 
     //console.log('Total energy available: '+availableEnergy);
 
-    roomManager.buildAllRoads(spawn);
+    //roomManager.buildAllRoads(spawn);
     roomManager.checkPopulation(spawn, availableEnergy);
 
     for (var name in Game.creeps) {
@@ -55,9 +56,11 @@ module.exports.loop = function () {
             if (creep.carry.energy > 0) {
                 creep.drop(RESOURCE_ENERGY);
             }
-            if (spawn.recycleCreep(creep) == ERR_NOT_IN_RANGE) {
+            if (creep.pos.x != recycleFlag.pos.x || creep.pos.y != recycleFlag.pos.y) {
+                creep.moveTo(recycleFlag.pos.x, recycleFlag.pos.y);
+            } else {
                 creep.say('♻️');
-                creep.moveTo(recycleFlag);
+                spawn.recycleCreep(creep);
             }
         }
     }

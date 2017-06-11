@@ -19,9 +19,10 @@ var roleBuilder = {
         }
     },
     getBuildTargets: function (creep) {
-        var towers = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
+        var defenses = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
             filter: (structure) => {
-                return structure.structureType == STRUCTURE_TOWER;
+                return structure.structureType == STRUCTURE_TOWER ||
+                    structure.structureType == STRUCTURE_RAMPART;
             }
         });
         var storages = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
@@ -30,13 +31,14 @@ var roleBuilder = {
                     structure.structureType == STRUCTURE_CONTAINER;
             }
         });
-        var roads = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
+        var roadAndWall = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
             filter: (structure) => {
-                return structure.structureType == STRUCTURE_ROAD;
+                return structure.structureType == STRUCTURE_WALL ||
+                    structure.structureType == STRUCTURE_ROAD;
             }
         });
 
-        return _.union(towers, storages, roads);
+        return _.union(defenses, storages, roadAndWall);
     },
     getRepairTargets: function (creep) {
         var towers = creep.room.find(FIND_STRUCTURES, {
@@ -84,7 +86,7 @@ var roleBuilder = {
             } else {
                 creep.say('🔨');
                 if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller );
+                    creep.moveTo(creep.room.controller);
                 }
             }
         } else {
