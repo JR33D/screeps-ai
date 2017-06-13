@@ -1,14 +1,11 @@
 var roleMiner = {
     parts: {
         basic: [MOVE, WORK, WORK], // 250
-        interm: [MOVE, WORK, WORK, WORK, MOVE], // 400
-        expert: [WORK,WORK,WORK,MOVE,WORK,WORK,MOVE] // 600
+        interm: [MOVE, WORK, WORK, WORK, WORK, MOVE], // 500
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        if (availableEnergy >= 600) {
-            bodyParts = this.parts['expert'];
-        } else if (availableEnergy >= 400) {
+        if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 250) {
             bodyParts = this.parts['basic'];
@@ -17,14 +14,14 @@ var roleMiner = {
         if (bodyParts) {
             var mineFlags = _.filter(Game.flags, (flag) => flag.name.startsWith('Mine'));
             _.forEach(mineFlags, (flag) => {
+                var creepBuilt;
                 var source = flag.pos.findClosestByRange(FIND_SOURCES);
                 var lookCreep = flag.room.lookForAt(LOOK_CREEPS, flag);
                 var lookContainer = flag.room.lookForAt(LOOK_STRUCTURES, flag);
                 var lookConstruction = flag.room.lookForAt(LOOK_CONSTRUCTION_SITES, flag);
-                if (lookContainer.length == 0 && lookConstruction.length != 0) {
+                if (lookContainer.length == 0 && lookConstruction.length == 0) {
                     flag.room.createConstructionSite(flag.pos.x, flag.pos.y, STRUCTURE_CONTAINER);
                 }
-
                 if (source && lookCreep.length == 0 && (lookContainer.length > 0 && lookContainer[0].structureType == STRUCTURE_CONTAINER)) {
                     var newName = spawn.createCreep(bodyParts, undefined, { role: 'miner', source: source.id, container: lookContainer[0].id });
                     console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');

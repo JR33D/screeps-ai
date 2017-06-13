@@ -3,10 +3,14 @@ var config = require('config');
 var roleBuilder = {
     parts: {
         basic: [WORK, CARRY, MOVE], // 200
-        interm: [WORK, WORK, CARRY, MOVE] // 300
+        interm: [WORK, WORK, CARRY, MOVE], // 300
+        expert: [WORK, WORK, CARRY, MOVE, WORK, WORK, CARRY, MOVE] // 600
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
+        // if (availableEnergy >= 600) {
+        //     bodyParts = this.parts['expert'];
+        // } else
         if (availableEnergy >= 300) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {

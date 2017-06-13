@@ -3,14 +3,15 @@ var config = require('config');
 var roleMiner = {
     parts: {
         basic: [CARRY, CARRY, MOVE, MOVE], // 200
-        interm: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], // 400
+        interm: [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], // 300
         expert: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 600
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        if(availableEnergy >= 600) {
-            bodyParts = this.parts['expert'];
-        } else if (availableEnergy >= 400) {
+        // if (availableEnergy >= 600) {
+        //     bodyParts = this.parts['expert'];
+        // } else
+        if (availableEnergy >= 300) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
@@ -18,7 +19,7 @@ var roleMiner = {
 
         if (bodyParts) {
             var newName = spawn.createCreep(bodyParts, undefined, { role: 'carrier' });
-            console.log('Spawning new creep: ' + newName + ' (' + Game.creeps[newName].memory.role + ')');
+            console.log('Spawning new creep: ' + newName + ' (carrier)');
         }
     },
     run: function (creep) {
@@ -32,10 +33,10 @@ var roleMiner = {
             _.forEach(containers, function (container) {
                 var creepsCollecting = _.filter(Game.creeps, (creep) => creep.memory.container == container.id && creep.memory.role == 'carrier');
 
-                //if (creepsCollecting.length < config.Carriers_Per_Storage) {
-                creep.memory.container = container.id;
-                extractContainer = Game.getObjectById(container.id);
-                //}
+                if (creepsCollecting.length < config.Carriers_Per_Storage) {
+                    creep.memory.container = container.id;
+                    extractContainer = Game.getObjectById(container.id);
+                }
             });
         } else {
             extractContainer = Game.getObjectById(creep.memory.container);

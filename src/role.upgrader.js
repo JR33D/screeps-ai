@@ -1,10 +1,14 @@
 var roleUpgrader = {
     parts: {
         basic: [WORK, CARRY, MOVE], // 200
-        interm: [WORK, WORK, CARRY, CARRY, MOVE, MOVE] // 400
+        interm: [WORK, WORK, CARRY, CARRY, CARRY, MOVE], // 400
+        expert: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 700
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
+        // if(availableEnergy >= 700) {
+        //     bodyParts = this.parts['expert'];
+        // } else
         if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
