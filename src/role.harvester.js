@@ -28,19 +28,9 @@ var roleHarvester = {
         }
 
         if (creep.memory.harvesting) {
-            var droppedSources = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
             var sources = creep.room.find(FIND_SOURCES);
-            var fullContainers = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_CONTAINER &&
-                        structure.energy > 1200;
-                }
-            });
-            if (fullContainers.length > 0 && creep.withdraw(fullContainers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(fullContainers[0]);
-            } else if (droppedSources && creep.pickup(droppedSources) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(droppedSources);
-            } else if (sources.length > 0 && creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+           
+            if (sources.length > 0 && creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[0]);
             }
         } else {

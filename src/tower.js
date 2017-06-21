@@ -1,5 +1,5 @@
 var config = require('config');
-
+var repairPercentage = 0.00005;
 var roleTower = {
     run: function (tower) {
         // Task priority for towers: attack, then heal, then repair
@@ -32,7 +32,8 @@ var roleTower = {
     repairNearestStructure: function (tower) {
         var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (s) => s.hits < s.hitsMax &&
-                //s.structureType != STRUCTURE_WALL &&
+                //s.structureType != STRUCTURE_ROAD &&
+                s.structureType != STRUCTURE_WALL &&
                 s.structureType != STRUCTURE_RAMPART,
         });
         if (closestDamagedStructure) {
@@ -40,9 +41,9 @@ var roleTower = {
         }
     },
     preventRampartDecay: function (tower) {
-        let hp = 500; // TODO: hardwired
+        let hp = 0.25; // TODO: hardwired
         var closestDyingRampart = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (s) => s.hits < hp && s.structureType == STRUCTURE_RAMPART,
+            filter: (s) => s.hits < (hp * s.hitsMax) && s.structureType == STRUCTURE_RAMPART,
         });
         if (closestDyingRampart) {
             return tower.repair(closestDyingRampart);

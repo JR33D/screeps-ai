@@ -5,6 +5,7 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleWarrior = require('role.warrior');
 var roleCarrier = require('role.carrier');
+var roleClaimer = require('role.claimer');
 
 var roomManager = {
     buildAllRoads: function (spawn) {
@@ -40,13 +41,14 @@ var roomManager = {
         var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
         var miners = _.filter(Game.creeps, (creep) => creep.memory.role == 'miner');
         var carriers = _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
+        var claimers = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
         var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         var warriors = _.filter(Game.creeps, (creep) => creep.memory.role == 'warrior');
         var archers = _.filter(Game.creeps, (creep) => creep.memory.role == 'archer');
         console.log('Harvesters: ' + harvesters.length + ' | Builders: ' + builders.length
             + '\nMiners: ' + miners.length + ' | Carriers: ' + carriers.length
-            + '\nUpgraders: ' + upgraders.length + ' | '
+            + '\nUpgraders: ' + upgraders.length + ' | Claimers: ' + claimers.length
             + '\nWarriors: ' + warriors.length + ' | Archers: ' + archers.length);
 
         if (!spawn.spawning && harvesters.length < config.MAX_HARVESTERS) {
@@ -61,7 +63,7 @@ var roomManager = {
         if (!spawn.spawning && (builders.length < config.MAX_BUILDERS && harvesters.length >= config.MAX_HARVESTERS)) {
             roleBuilder.build(spawn, availableEnergy);
         }
-        if (!spawn.spawning && (upgraders.length < config.MAX_UPGRADERS && builders.length >= config.MAX_BUILDERS && harvesters.length >= config.MAX_HARVESTERS)) {
+        if (!spawn.spawning && upgraders.length != 1) {
             roleUpgrader.build(spawn, availableEnergy);
         }
         if (!spawn.spawning && warriors.length < config.MAX_WARRIORS) {

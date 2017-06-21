@@ -4,14 +4,13 @@ var roleMiner = {
     parts: {
         basic: [CARRY, CARRY, MOVE, MOVE], // 200
         interm: [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], // 300
-        expert: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 600
+        expert: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 400
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        // if (availableEnergy >= 600) {
-        //     bodyParts = this.parts['expert'];
-        // } else
-        if (availableEnergy >= 300) {
+        if (availableEnergy >= 400) {
+            bodyParts = this.parts['expert'];
+        } else if (availableEnergy >= 300) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
@@ -42,15 +41,27 @@ var roleMiner = {
             extractContainer = Game.getObjectById(creep.memory.container);
         }
 
-        var storage = creep.room.find(FIND_STRUCTURES, {
+        var spawnExtensions = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_EXTENSION ||
-                    structure.structureType == STRUCTURE_SPAWN ||
-                    structure.structureType == STRUCTURE_TOWER) &&
+                    structure.structureType == STRUCTURE_SPAWN) &&
                     structure.energy < structure.energyCapacity;
             }
         });
-
+        
+        var towers = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_TOWER &&
+                    structure.energy < structure.energyCapacity;
+            }
+        });
+        var storageContainer = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_STORAGE &&
+                creep.room.storage.store[RESOURCE_ENERGY] < creep.room.storage.storeCapacity;
+            }
+        });
+        var storage = _.union(spawnExtensions, towers, storageContainer);
         if (!creep.memory.full && creep.carry.energy == creep.carryCapacity) {
             creep.memory.full = true;
         } else if (creep.memory.full && creep.carry.energy == 0) {

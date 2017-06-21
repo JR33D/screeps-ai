@@ -2,14 +2,13 @@ var roleUpgrader = {
     parts: {
         basic: [WORK, CARRY, MOVE], // 200
         interm: [WORK, WORK, CARRY, CARRY, CARRY, MOVE], // 400
-        expert: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 700
+        expert: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 800
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        // if(availableEnergy >= 700) {
-        //     bodyParts = this.parts['expert'];
-        // } else
-        if (availableEnergy >= 400) {
+        if(availableEnergy >= 800) {
+            bodyParts = this.parts['expert'];
+        } else if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
@@ -32,9 +31,8 @@ var roleUpgrader = {
         if (!creep.memory.upgrading) {
             var sources = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN) &&
-                        structure.energy > 0;
+                    return (structure.structureType == STRUCTURE_STORAGE &&
+                    creep.room.storage.store[RESOURCE_ENERGY] >= 50);
                 }
             });
             if (sources.length > 0) {

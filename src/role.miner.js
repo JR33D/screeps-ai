@@ -1,13 +1,13 @@
 var roleMiner = {
     parts: {
-        basic: [MOVE, WORK, WORK], // 250
-        interm: [MOVE, WORK, WORK, WORK, WORK, MOVE], // 500
+        basic: [MOVE, WORK, MOVE], // 200
+        interm: [MOVE, WORK, WORK, WORK, MOVE], // 300
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
         if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
-        } else if (availableEnergy >= 250) {
+        } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
         }
 
@@ -32,10 +32,10 @@ var roleMiner = {
     run: function (creep) {
         var source = Game.getObjectById(creep.memory.source);
         var container = Game.getObjectById(creep.memory.container);
-        if (container.store[RESOURCE_ENERGY] < container.storeCapacity) {
-            if (creep.pos.x != container.pos.x || creep.pos.y != container.pos.y) {
-                creep.moveTo(container.pos.x, container.pos.y);
-            } else {
+        if (creep.pos.x != container.pos.x || creep.pos.y != container.pos.y) {
+            creep.moveTo(container.pos.x, container.pos.y);
+        } else {
+            if (container.store[RESOURCE_ENERGY] < container.storeCapacity) {
                 creep.harvest(source);
             }
         }

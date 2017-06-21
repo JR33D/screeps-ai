@@ -3,7 +3,7 @@ var config = require('config');
 var roleBuilder = {
     parts: {
         basic: [WORK, CARRY, MOVE], // 200
-        interm: [WORK, WORK, CARRY, MOVE], // 300
+        interm: [WORK, WORK, CARRY, CARRY, MOVE, MOVE], // 400
         expert: [WORK, WORK, CARRY, MOVE, WORK, WORK, CARRY, MOVE] // 600
     },
     build: function (spawn, availableEnergy) {
@@ -11,7 +11,7 @@ var roleBuilder = {
         // if (availableEnergy >= 600) {
         //     bodyParts = this.parts['expert'];
         // } else
-        if (availableEnergy >= 300) {
+        if (availableEnergy >= 400) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];
@@ -32,7 +32,8 @@ var roleBuilder = {
         var storages = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_EXTENSION ||
-                    structure.structureType == STRUCTURE_CONTAINER;
+                    structure.structureType == STRUCTURE_CONTAINER ||
+                    structure.structureType == STRUCTURE_STORAGE;
             }
         });
         var roadAndWall = creep.room.find(FIND_MY_CONSTRUCTION_SITES, {
@@ -48,7 +49,7 @@ var roleBuilder = {
         var towers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_TOWER &&
-                    structure.hits < (config.Structure_Health_Percentage * structure.hitsMax);
+                    structure.hits < structure.hitsMax;
             }
         });
         var storages = creep.room.find(FIND_STRUCTURES, {
@@ -56,16 +57,19 @@ var roleBuilder = {
                 return (structure.structureTargets == STRUCTURE_SPAWN ||
                     structure.structureTargets == STRUCTURE_EXTENSION ||
                     structure.structureType == STRUCTURE_CONTAINER) &&
-                    structure.hits < (config.Structure_Health_Percentage * structure.hitsMax);
+                    structure.hits < structure.hitsMax;
             }
         });
-        var roads = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureTargets == STRUCTURE_ROAD &&
-                    structure.hits < (config.Structure_Health_Percentage * structure.hitsMax);
-            }
+        var road = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < s.hitsMax &&
+                s.structureType == STRUCTURE_ROAD
         });
-        return _.union(towers, storages, roads);
+        // .room.find(FIND_STRUCTURES, {
+        //     filter: (s) => s.hits < s.hitsMax &&
+        //         (s.structureType == STRUCTURE_ROAD ||
+        //         s.structureType == STRUCTURE_WALL)
+        // });
+        return _.union(towers, storages, [road]);
     },
     run: function (creep) {
         if (creep.memory.building && creep.carry.energy == 0) {
@@ -96,9 +100,8 @@ var roleBuilder = {
         } else {
             var sources = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN) &&
-                        structure.energy == structure.energyCapacity;
+                    return (structure.structureType == STRUCTURE_STORAGE &&
+                        creep.room.storage.store[RESOURCE_ENERGY] > 1000);
                 }
             });
             creep.say('🎁');
