@@ -28,10 +28,17 @@ var roleHarvester = {
         }
 
         if (creep.memory.harvesting) {
-            var sources = creep.room.find(FIND_SOURCES);
-           
-            if (sources.length > 0 && creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0]);
+            var source;
+            if(!creep.memory.source) {
+                var sources = creep.room.find(FIND_SOURCES);
+                var target = (sources.length > 1 && Math.random(0, 1) > .5) ? 1 : 0;
+                creep.memory.source = sources[target].id;
+                source = sources[target];
+            } else {
+                source = Game.getObjectById(creep.memory.source);
+            }
+            if (source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(source);
             }
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {

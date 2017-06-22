@@ -1,5 +1,5 @@
 var config = require('config');
-var repairPercentage = 0.00005;
+var repairPercentage = 0.00006;
 var roleTower = {
     run: function (tower) {
         // Task priority for towers: attack, then heal, then repair
@@ -32,7 +32,7 @@ var roleTower = {
     repairNearestStructure: function (tower) {
         var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (s) => s.hits < s.hitsMax &&
-                //s.structureType != STRUCTURE_ROAD &&
+                s.structureType != STRUCTURE_ROAD &&
                 s.structureType != STRUCTURE_WALL &&
                 s.structureType != STRUCTURE_RAMPART,
         });

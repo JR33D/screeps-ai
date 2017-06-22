@@ -3,14 +3,15 @@ var config = require('config');
 var roleMiner = {
     parts: {
         basic: [CARRY, CARRY, MOVE, MOVE], // 200
-        interm: [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], // 300
+        interm: [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], // 300
         expert: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE] // 400
     },
     build: function (spawn, availableEnergy) {
         var bodyParts;
-        if (availableEnergy >= 400) {
-            bodyParts = this.parts['expert'];
-        } else if (availableEnergy >= 300) {
+        // if (availableEnergy >= 400) {
+        //     bodyParts = this.parts['expert'];
+        // } else 
+        if (availableEnergy >= 300) {
             bodyParts = this.parts['interm'];
         } else if (availableEnergy >= 200) {
             bodyParts = this.parts['basic'];

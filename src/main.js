@@ -20,12 +20,6 @@ module.exports.loop = function () {
 
         var towers = Game.rooms[name].find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
         towers.forEach(tower => roleTower.run(tower));
-        
-        var damagedRoadStructure = Game.rooms[name].find(FIND_STRUCTURES, {
-            filter: (s) => s.hits < s.hitsMax &&
-                s.structureType == STRUCTURE_ROAD
-        });
-        console.log("number of damaged roads: " + damagedRoadStructure.length);
     }
 
 

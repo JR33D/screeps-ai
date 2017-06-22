@@ -60,16 +60,12 @@ var roleBuilder = {
                     structure.hits < structure.hitsMax;
             }
         });
-        var road = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        var road = creep.room.find(FIND_STRUCTURES, {
             filter: (s) => s.hits < s.hitsMax &&
-                s.structureType == STRUCTURE_ROAD
+                (s.structureType == STRUCTURE_ROAD ||
+                s.structureType == STRUCTURE_WALL)
         });
-        // .room.find(FIND_STRUCTURES, {
-        //     filter: (s) => s.hits < s.hitsMax &&
-        //         (s.structureType == STRUCTURE_ROAD ||
-        //         s.structureType == STRUCTURE_WALL)
-        // });
-        return _.union(towers, storages, [road]);
+        return _.union(towers, storages);
     },
     run: function (creep) {
         if (creep.memory.building && creep.carry.energy == 0) {
