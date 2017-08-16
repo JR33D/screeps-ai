@@ -1,2 +1,10 @@
+# Disallow
+## Ignore build files and folders
+**/*.js
+**/*.js.map
 node_modules/
+dist/
+typings/
+
+## Ignore Secret files with sensative information
 secrets.js
