@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var screeps = require('gulp-screeps');
-var ts = require("gulp-typescript");
-var tsProject = ts.createProject("tsconfig.json");
+var ts = require('gulp-typescript');
+var tsProject = ts.createProject('tsconfig.json');
 
 
 var secrets = require('./secrets.js');
@@ -19,8 +19,8 @@ gulp.task('ptr', function () {
         .pipe(screeps(secrets));
 });
 
-gulp.task("compile", function () {
+gulp.task('compile', function () {
     return tsProject.src()
         .pipe(tsProject())
-        .js.pipe(gulp.dest('./dist'));
+        .js.pipe(gulp.dest('./dist'));;
 });

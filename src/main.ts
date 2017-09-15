@@ -1,7 +1,3 @@
-/**
- * @export loop function as main loop for game.
- *
- */
-module.exports.loop = function () {
+import GameManager from './GameManager';
 
-};
+export const loop = () => GameManager.loop();

@@ -4,17 +4,12 @@
         "alwaysStrict": true,
         "declaration": true,
         "module": "commonjs",
-        "noFallthroughCasesInSwitch": true,
-        "noResolve": true,
-        "noImplicitAny": true,
         "noImplicitReturns": true,
-        "noImplicitThis": true,
         "noUnusedLocals": true,
         "noUnusedParameters": false,
-        "outDir": "dist/",
+        "outDir": "./dist",
         "removeComments": false,
         "strictNullChecks": true,
-        "suppressImplicitAnyIndexErrors": true,
         "target": "es6",
         "types": [
             "lodash",
@@ -23,6 +18,9 @@
     },
     "exclude": [
         "src/**/*.js"
+    ],
+    "files": [
+        "./node_modules/screeps-typescript-declarations/dist/screeps.d.ts"
     ],
     "include": [
         "src/**/*.ts"
